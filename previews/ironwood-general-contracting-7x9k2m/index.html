@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Ironwood General Contracting | Renovations Done Right</title>
+  <meta name="description" content="A conversion-focused general contractor website concept for kitchens, bathrooms, additions, decks and whole-home renovations.">
+  <meta name="theme-color" content="#101c22">
+  <link rel="preload" href="../../assets/source/ar-mcclung-construction/img-03-46702ada.jpg" as="image" type="image/jpeg">
+  <link rel="stylesheet" href="styles-1.css">
+  <link rel="stylesheet" href="styles-2.css">
+  <link rel="stylesheet" href="styles-3.css">
+  <link rel="stylesheet" href="styles-4.css">
+  <link rel="stylesheet" href="styles-5.css">
+</head>
+<body>
+  <div id="site-loading" style="min-height:100vh;display:grid;place-items:center;background:#101c22;color:white;font:700 18px system-ui">Loading Ironwood…</div>
+  <div id="app"></div>
+  <script>
+    const fragments = ['body-1.html', 'body-2.html', 'body-3.html', 'body-4.html', 'body-5.html'];
+    Promise.all(fragments.map(file => fetch(file).then(r => { if (!r.ok) throw new Error(file); return r.text(); })))
+      .then(parts => {
+        document.getElementById('site-loading').remove();
+        document.getElementById('app').innerHTML = parts.join('');
+        const script = document.createElement('script');
+        script.src = 'script.js';
+        document.body.appendChild(script);
+      })
+      .catch(() => { document.getElementById('site-loading').textContent = 'Preview failed to load. Refresh the page.'; });
+  </script>
+</body>
+</html>
