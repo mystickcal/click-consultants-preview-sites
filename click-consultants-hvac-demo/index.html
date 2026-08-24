@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A fictional HVAC local lead website demonstration by Click Consultants.">
+  <meta name="robots" content="index,follow">
+  <title>Local Comfort HVAC Demo | Click Consultants</title>
+  <style>
+    :root {
+      --ink: #0a1d31;
+      --ink-2: #173650;
+      --paper: #f4f8fa;
+      --white: #ffffff;
+      --steel: #6a7f8f;
+      --line: rgba(10, 29, 49, .14);
+      --orange: #f36c21;
+      --orange-dark: #c84a0c;
+      --aqua: #8bd9de;
+      --shadow: 0 24px 70px rgba(5, 24, 42, .16);
+      --radius: 22px;
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    .demo-note {
+      padding: 9px 18px;
+      color: #dce8f1;
+      background: #071624;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+    .nav {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      min-height: 82px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      color: var(--white);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--aqua);
+      font-weight: 950;
+      letter-spacing: -.05em;
+    }
+    .brand-text { display: grid; line-height: 1; }
+    .brand-text strong { font-size: 16px; letter-spacing: .035em; }
+    .brand-text small { margin-top: 5px; color: #bcd0df; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 28px; font-size: 14px; font-weight: 750; }
+    .nav-links a { text-decoration: none; }
+    .nav-phone { color: var(--aqua); }
+    .hero {
+      position: relative;
+      min-height: 735px;
+      overflow: hidden;
+      color: var(--white);
+      background: #071624;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(4, 17, 29, .98) 0%, rgba(4, 17, 29, .91) 35%, rgba(4, 17, 29, .2) 68%, rgba(4, 17, 29, .04) 100%),
+        url("assets/hvac-technician-hero.png") center right / cover no-repeat;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 170px;
+      background: linear-gradient(180deg, transparent, rgba(7, 22, 36, .82));
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      min-height: 650px;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      align-items: center;
+      gap: 70px;
+      padding: 72px 0 96px;
+    }
+    .eyebrow { margin: 0 0 18px; color: var(--aqua); font-size: 12px; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    h1, h2, h3 { margin: 0; line-height: .98; letter-spacing: -.045em; }
+    h1 { max-width: 760px; font-family: "Arial Narrow", Impact, sans-serif; font-size: clamp(58px, 8vw, 112px); font-weight: 900; text-transform: uppercase; }
+    .hero-copy { max-width: 610px; margin: 24px 0 0; color: #d8e4ec; font-size: clamp(17px, 2vw, 21px); }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .btn {
+      display: inline-flex;
+      min-height: 54px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 23px;
+      border: 0;
+      border-radius: 9px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: var(--white); background: var(--orange); }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-ghost { color: var(--white); border: 1px solid rgba(255,255,255,.34); background: rgba(255,255,255,.08); backdrop-filter: blur(10px); }
+    .dispatch {
+      align-self: end;
+      margin-bottom: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,.19);
+      border-radius: 18px;
+      background: rgba(5, 23, 38, .76);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .dispatch-label { color: var(--aqua); font-size: 11px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .dispatch strong { display: block; margin-top: 8px; font-size: 28px; line-height: 1.05; }
+    .dispatch p { margin: 12px 0 18px; color: #c5d5df; font-size: 14px; }
+    .dispatch a { color: var(--white); font-weight: 900; text-decoration: none; }
+    .feature-rail {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      margin-top: -49px;
+      grid-template-columns: repeat(3, 1fr);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .feature { padding: 28px 30px; border-right: 1px solid var(--line); }
+    .feature:last-child { border-right: 0; }
+    .feature span { color: var(--orange); font-size: 12px; font-weight: 950; letter-spacing: .12em; text-transform: uppercase; }
+    .feature strong { display: block; margin-top: 6px; font-size: 18px; }
+    .section { padding: 105px 0; }
+    .section-head { display: grid; grid-template-columns: .8fr 1.2fr; align-items: end; gap: 50px; margin-bottom: 48px; }
+    h2 { font-family: "Arial Narrow", Impact, sans-serif; font-size: clamp(46px, 6vw, 82px); font-weight: 900; text-transform: uppercase; }
+    .section-head p { margin: 0; color: #4e6474; font-size: 18px; }
+    .services { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .service-card {
+      min-height: 290px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--white);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(7, 28, 47, .1); }
+    .service-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 14px; color: var(--white); background: var(--ink-2); font-size: 21px; }
+    .service-card h3 { margin-top: 42px; font-size: 25px; line-height: 1.05; letter-spacing: -.025em; }
+    .service-card p { margin: 15px 0 0; color: #607584; font-size: 15px; }
+    .urgent {
+      overflow: hidden;
+      padding: 48px;
+      border-radius: 28px;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--ink), #153d5d);
+    }
+    .urgent-grid { display: grid; grid-template-columns: 1.25fr .75fr; align-items: center; gap: 50px; }
+    .urgent h2 { font-size: clamp(44px, 5vw, 72px); }
+    .urgent p { max-width: 650px; margin: 18px 0 0; color: #c8d7e2; font-size: 18px; }
+    .urgent-card { padding: 27px; border-radius: 18px; color: var(--ink); background: var(--aqua); }
+    .urgent-card small { font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .urgent-card strong { display: block; margin-top: 8px; font-size: 30px; line-height: 1.05; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .step { padding-top: 22px; border-top: 3px solid var(--ink); }
+    .step b { color: var(--orange); font-size: 12px; letter-spacing: .15em; text-transform: uppercase; }
+    .step h3 { margin-top: 30px; font-size: 27px; }
+    .step p { margin: 13px 0 0; color: #5c7180; }
+    .request { color: var(--white); background: var(--ink); }
+    .request-grid { display: grid; grid-template-columns: .86fr 1.14fr; align-items: start; gap: 72px; }
+    .request h2 { font-size: clamp(48px, 6vw, 78px); }
+    .request-copy { margin: 20px 0 0; color: #c8d8e4; font-size: 18px; }
+    .contact-lines { display: grid; gap: 11px; margin-top: 30px; }
+    .contact-lines a, .contact-lines span { color: var(--white); font-weight: 850; text-decoration: none; }
+    .form-card { padding: 30px; border-radius: 22px; color: var(--ink); background: var(--white); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .field { display: grid; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    input, select, textarea { width: 100%; border: 1px solid #cbd7df; border-radius: 8px; color: var(--ink); background: #f9fbfc; padding: 13px 14px; }
+    textarea { min-height: 118px; resize: vertical; }
+    input:focus, select:focus, textarea:focus, .btn:focus-visible, a:focus-visible { outline: 3px solid rgba(243, 108, 33, .35); outline-offset: 3px; }
+    .form-card .btn { width: 100%; margin-top: 16px; }
+    .form-status { min-height: 22px; margin: 12px 0 0; color: #536978; font-size: 13px; }
+    footer { padding: 28px 0; color: #95a9b7; background: #071624; font-size: 12px; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; }
+    @media (max-width: 900px) {
+      .nav-links a:not(.nav-phone) { display: none; }
+      .hero-grid { grid-template-columns: 1fr; gap: 0; }
+      .dispatch { max-width: 420px; align-self: auto; margin: 0; }
+      .feature-rail, .services, .steps { grid-template-columns: 1fr 1fr; }
+      .feature:nth-child(2) { border-right: 0; }
+      .feature:last-child { grid-column: 1 / -1; border-top: 1px solid var(--line); }
+      .section-head, .urgent-grid, .request-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 26px, var(--max)); }
+      .demo-note { font-size: 10px; }
+      .nav { min-height: 70px; }
+      .brand-text strong { font-size: 13px; }
+      .nav-phone { font-size: 12px; }
+      .hero { min-height: auto; }
+      .hero::before { background: linear-gradient(180deg, rgba(4,17,29,.93), rgba(4,17,29,.73)), url("assets/hvac-technician-hero.png") 66% center / cover no-repeat; }
+      .hero-grid { min-height: auto; padding: 58px 0 90px; }
+      h1 { font-size: clamp(48px, 16vw, 68px); }
+      .hero-copy { font-size: 17px; }
+      .actions { display: grid; }
+      .btn { width: 100%; }
+      .dispatch { margin-top: 42px; }
+      .feature-rail { grid-template-columns: 1fr; margin-top: -34px; }
+      .feature, .feature:nth-child(2), .feature:last-child { grid-column: auto; border-right: 0; border-top: 1px solid var(--line); }
+      .feature:first-child { border-top: 0; }
+      .section { padding: 76px 0; }
+      .section-head { gap: 22px; margin-bottom: 30px; }
+      h2 { font-size: 48px; }
+      .services, .steps { grid-template-columns: 1fr; }
+      .service-card { min-height: 245px; }
+      .urgent { padding: 28px 22px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .form-card { padding: 22px; }
+      .footer-row { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-note">Fictional HVAC website demonstration by Click Consultants — no client or performance claims</div>
+  <header class="hero" id="top">
+    <div class="wrap">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="Local Comfort HVAC demo home">
+          <span class="brand-mark">LC</span>
+          <span class="brand-text"><strong>LOCAL COMFORT</strong><small>HVAC website demo</small></span>
+        </a>
+        <div class="nav-links">
+          <a href="#services">Services</a>
+          <a href="#how">How it works</a>
+          <a href="#request">Contact</a>
+          <a class="nav-phone" href="tel:+15550102026">Call (555) 010-2026</a>
+        </div>
+      </nav>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Heating + cooling · Your service area</p>
+          <h1>Comfort restored. Fast.</h1>
+          <p class="hero-copy">Fast, straightforward help for heating, cooling, and indoor-air concerns. Call for urgent service or send a request from any screen.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#request">Request service</a>
+            <a class="btn btn-ghost" href="tel:+15550102026">Call now</a>
+          </div>
+        </div>
+        <aside class="dispatch" aria-label="Emergency service example">
+          <span class="dispatch-label">Emergency service</span>
+          <strong>Need help now?</strong>
+          <p>Call for the fastest response. Use the service-request form for everything else.</p>
+          <a href="tel:+15550102026">(555) 010-2026 →</a>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap feature-rail" aria-label="Service experience highlights">
+      <div class="feature"><span>01 · Easy</span><strong>Request service in a few taps</strong></div>
+      <div class="feature"><span>02 · Clear</span><strong>Know what happens next</strong></div>
+      <div class="feature"><span>03 · Local</span><strong>A direct path for urgent calls</strong></div>
+    </div>
+
+    <section class="section" id="services">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">What do you need help with?</p><h2>Service without the search.</h2></div>
+          <p>Choose the service that best matches what is happening. For urgent heating or cooling problems, call and speak with the service team directly.</p>
+        </div>
+        <div class="services">
+          <article class="service-card"><span class="service-icon" aria-hidden="true">↗</span><h3>Heating repair</h3><p>Diagnose no-heat calls, uneven comfort, short cycling, and equipment concerns.</p></article>
+          <article class="service-card"><span class="service-icon" aria-hidden="true">↘</span><h3>Cooling repair</h3><p>Route warm-air, weak-airflow, thermostat, and system-performance requests.</p></article>
+          <article class="service-card"><span class="service-icon" aria-hidden="true">◎</span><h3>System replacement</h3><p>Give homeowners a clear place to ask about options, timing, and an estimate.</p></article>
+          <article class="service-card"><span class="service-icon" aria-hidden="true">≈</span><h3>Indoor air quality</h3><p>Make filters, humidity, ventilation, and air-cleaning services easy to find.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap urgent" aria-label="Urgent service example">
+      <div class="urgent-grid">
+        <div><p class="eyebrow">When comfort cannot wait</p><h2>Call now. Get the right help.</h2><p>For no-heat, no-cooling, or other urgent concerns, call the service line. For planned work, send a request and share the details.</p></div>
+        <div class="urgent-card"><small>Urgent service</small><strong>Call first. Use the form for planned work.</strong></div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">A simple customer path</p><h2>From problem to scheduled.</h2></div>
+          <p>Share the problem, confirm the service details, and choose a time that works. The service team handles the technical questions with you.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><b>Step one</b><h3>Tell us what is happening.</h3><p>Choose the service and share the essential details from a phone or desktop.</p></article>
+          <article class="step"><b>Step two</b><h3>Confirm the right route.</h3><p>The business responds with timing, availability, and any questions required.</p></article>
+          <article class="step"><b>Step three</b><h3>Schedule the service.</h3><p>The request becomes a real conversation instead of another abandoned website visit.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section request" id="request">
+      <div class="wrap request-grid">
+        <div>
+          <p class="eyebrow">Request service</p>
+          <h2>Make the next step feel easy.</h2>
+          <p class="request-copy">Share a few details about the heating, cooling, or air-quality problem. The service team can follow up with availability and next steps.</p>
+          <div class="contact-lines"><a href="tel:+15550102026">(555) 010-2026</a><span>Your City + nearby communities</span></div>
+        </div>
+        <form class="form-card" id="demo-form">
+          <div class="form-grid">
+            <div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name" placeholder="Your name"></div>
+            <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" autocomplete="tel" placeholder="Best number"></div>
+            <div class="field full"><label for="service">What do you need help with?</label><select id="service" name="service"><option>Choose a service</option><option>Heating repair</option><option>Cooling repair</option><option>System replacement</option><option>Indoor air quality</option></select></div>
+            <div class="field full"><label for="details">What is happening?</label><textarea id="details" name="details" placeholder="Share a few details"></textarea></div>
+          </div>
+          <button class="btn btn-primary" type="submit">Request service</button>
+          <p class="form-status" id="form-status" aria-live="polite">Demonstration only. This form does not transmit or store information.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row"><span>Local Comfort is fictional demonstration content.</span><span>Website demonstration by Click Consultants.</span></div>
+  </footer>
+
+  <script>
+    document.getElementById('demo-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      document.getElementById('form-status').textContent = 'Demo complete — no information was sent or stored.';
+    });
+  </script>
+</body>
+</html>
