@@ -51,3 +51,7 @@
   .hero h1,.style-remodel .hero h1{font-size:30px}
 }
 
+
+/* Native anchor scrolling accounts for the rendered sticky header. */
+html{scroll-padding-top:var(--anchor-header-offset,0px)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
