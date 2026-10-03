@@ -33,12 +33,21 @@
   };
 
   measure();
-  requestAnimationFrame(() => {
-    update();
-    const target = activeTarget();
-    if (target) target.scrollIntoView({block: "start", behavior: "instant"});
-  });
+  requestAnimationFrame(update);
   if ("ResizeObserver" in window) new ResizeObserver(update).observe(header);
   window.addEventListener("resize", update);
+  // Let the browser restore its saved position before checking the fragment.
+  window.addEventListener("pageshow", event => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      update();
+      if (event.persisted) {
+        revealCoveredTarget();
+      } else {
+        const target = activeTarget();
+        if (target) target.scrollIntoView({block: "start", behavior: "instant"});
+      }
+    }));
+  });
+  window.addEventListener("hashchange", () => requestAnimationFrame(revealCoveredTarget));
   if (document.fonts) document.fonts.ready.then(update);
 })();

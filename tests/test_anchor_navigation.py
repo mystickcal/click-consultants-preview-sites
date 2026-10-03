@@ -7,6 +7,7 @@ import functools
 import http.server
 import json
 import os
+import subprocess
 import threading
 from pathlib import Path
 
@@ -71,7 +72,7 @@ def context(browser):
     assert not forbidden
 
 
-def ready(page):
+def assets_ready(page):
     page.wait_for_function("""() => Array.from(document.querySelectorAll("img"))
         .every(image => image.complete && image.naturalWidth > 0)""", timeout=15000)
     page.evaluate("() => document.fonts.ready.then(() => true)")
@@ -81,6 +82,10 @@ def ready(page):
     else:
         assert not page.evaluate("""() => Array.from(document.fonts)
             .some(font => font.status === "loaded")""")
+
+
+def ready(page):
+    assets_ready(page)
     page.wait_for_function("""() => {
         const header = document.querySelector(".topbar");
         const position = getComputedStyle(header).position;
@@ -214,15 +219,95 @@ def test_default_motion_native_anchor_finishes_below_header(context, server):
     assert page.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == "smooth"
     for target in ["services", "projects", "areas"]:
         page.locator('.topbar nav a[href="#' + target + '"]').press("Enter")
-        page.evaluate("""async () => {
-            let previous = scrollY, stable = 0;
-            for (let frame = 0; frame < 180; frame++) {
-                await new Promise(requestAnimationFrame);
-                stable = scrollY === previous ? stable + 1 : 0;
-                previous = scrollY;
-                if (stable >= 8) return;
-            }
-            throw new Error("Native anchor scrolling did not settle");
-        }""")
+        settle_scroll(page)
         assert_visible(page, target)
+    page.close()
+
+def settle_scroll(page):
+    page.evaluate("""async () => {
+        let previous = scrollY, stable = 0;
+        for (let frame = 0; frame < 180; frame++) {
+            await new Promise(requestAnimationFrame);
+            stable = scrollY === previous ? stable + 1 : 0;
+            previous = scrollY;
+            if (stable >= 8) return;
+        }
+        throw new Error("Native anchor scrolling did not settle");
+    }""")
+
+
+@pytest.fixture
+def upgrade_server():
+    """Serve two bounded actual old files, then the published candidate at one origin."""
+    previous = "6f88ea6678a592a0f2adac249a79184ee3269396"
+    paths = ["site.css", "previews/" + CONTRACTOR + "/index.html"]
+    baseline = {}
+    for path in paths:
+        size = int(subprocess.check_output(
+            ["git", "cat-file", "-s", previous + ":" + path], cwd=ROOT, text=True))
+        assert size <= 65536
+        baseline["/" + path] = subprocess.check_output(
+            ["git", "show", previous + ":" + path], cwd=ROOT)
+    assert sum(map(len, baseline.values())) <= 131072
+    upgraded = threading.Event()
+
+    class UpgradeHandler(QuietHandler):
+        def end_headers(self):
+            self.send_header("Cache-Control", "no-store")
+            super().end_headers()
+
+        def do_GET(self):
+            lookup = self.path.split("?")[0]
+            if lookup.endswith("/"):
+                lookup += "index.html"
+            if not upgraded.is_set() and lookup in baseline:
+                source = baseline[lookup]
+                self.send_response(200)
+                self.send_header("Content-Type", self.guess_type(lookup))
+                self.send_header("Content-Length", str(len(source)))
+                self.end_headers()
+                self.wfile.write(source)
+                return
+            super().do_GET()
+
+    handler = functools.partial(UpgradeHandler, directory=str(ROOT))
+    service = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=service.serve_forever, daemon=True)
+    thread.start()
+    yield "http://127.0.0.1:" + str(service.server_port), upgraded.set
+    service.shutdown()
+    thread.join()
+    service.server_close()
+
+
+def test_history_from_previous_release_reveals_restored_anchor(context, browser, upgrade_server):
+    engine, _ = browser
+    origin, upgrade = upgrade_server
+    page = context.new_page()
+    page.emulate_media(reduced_motion="no-preference")
+    page.goto(origin + "/previews/" + CONTRACTOR + "/", wait_until="networkidle")
+    assets_ready(page)
+    page.locator('.topbar nav a[href="#services"]').press("Enter")
+    settle_scroll(page)
+    before = geometry(page, "services")
+    assert before["headingTop"] < before["headerBottom"] - 1
+    upgrade()
+    page.reload(wait_until="networkidle")
+    ready(page)
+    assert_visible(page, "services")
+    page.locator('.topbar nav a[href="#projects"]').press("Enter")
+    settle_scroll(page)
+    assert_visible(page, "projects")
+    page.go_back()
+    settle_scroll(page)
+    assert page.url.endswith("#services")
+    restored = assert_visible(page, "services")
+    page.go_forward()
+    settle_scroll(page)
+    assert page.url.endswith("#projects")
+    assert_visible(page, "projects")
+    receipt = ROOT / ".audit-state" / ("history-upgrade-" + engine + "-" + FONT_MODE + ".json")
+    receipt.write_text(json.dumps({"engine": engine, "fontMode": FONT_MODE,
+                                  "oldCommit": "6f88ea6678a592a0f2adac249a79184ee3269396",
+                                  "oldGeometry": before, "restoredGeometry": restored}, indent=2))
     page.close()
